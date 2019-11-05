@@ -21,6 +21,7 @@ public class PrimaryController {
     private List<Integer> myNumbers;
     Random rand = new Random();
 
+
     public void initialize(){
         generateRandomNumber();
         goButton.disableProperty().bind(
@@ -61,18 +62,61 @@ public class PrimaryController {
         App.setRoot("secondary");
     }
 
-    public void doTurn(ActionEvent actionEvent) {
+    private int calculateBulls(List<Integer> userNumbers) {
+        int bulls = 0;
+
+
+        for (int i = 0; i < myNumbers.size(); i++) {
+            int myNum = myNumbers.get(i);
+            int userNum = userNumbers.get(i);
+
+            if (myNum == userNum)
+                bulls++;
+        }
+        return bulls;
+    }
+
+    private int calculateCows(List<Integer> userNumbers){
+        int cows = 0;
+
+
+        for (int ui = 0; ui < myNumbers.size(); ui++) {
+            for (int mi = 0; mi < myNumbers.size(); mi++) {
+           if(ui==mi){
+           continue;
+           }
+            int myNum = myNumbers.get(mi);
+           int userNum = userNumbers.get(ui);
+           if(myNum == userNum){
+               cows++;
+           }
+           return cows;
+
+            }
+        }
+        return cows;
+
+    }
+
+
+
+    public void doTurn(ActionEvent actionEvent) throws IOException {
         turnCounter++;
         int n1 = num1.getValue();
         int n2 = num2.getValue();
         int n3 = num3.getValue();
         int n4 = num4.getValue();
         String guess = "" + n1 + n2 + n3 + n4;
+        var userNumbers = List.of(n1,n2,n3,n4);
+        var cows = calculateCows(userNumbers);
+        var bulls = calculateBulls(userNumbers);
 
 
         Turn turn = new Turn();
         turn.setGuess(guess);
        turn.setTurnNr(turnCounter);
+       turn.setCows(cows);
+       turn.setBulls(bulls);
 
 
        turns.getItems().add(turn);
@@ -80,5 +124,11 @@ public class PrimaryController {
 
         turns.sort();
         System.out.println("Button pressed! " + guess);
+
+
+        if(bulls == 4){
+            App.setRoot("secondary");
+        }
+
     }
 }
